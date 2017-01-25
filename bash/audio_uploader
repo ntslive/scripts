@@ -1,0 +1,36 @@
+#!/usr/bin/env bash -e
+
+# ###SETUP###
+
+# Install AWS CLI
+# http://docs.aws.amazon.com/cli/latest/userguide/installing.html
+
+# Configure AWS CLI with credentials:
+# $ aws configure
+# AWS Access Key ID [****************MQ5A]:
+# AWS Secret Access Key [****************ukte]:
+# Default region name [eu-west-1]:
+# Default output format [None]:
+
+# you may want to reduce maximum number of concurrent requests (default it 10)
+# Lowering this value will make the S3 transfer commands less resource intensive.
+# more info http://docs.aws.amazon.com/cli/latest/topic/s3-config.html
+# $ aws configure set default.s3.max_concurrent_requests 2
+
+# Test manually, then set up crontab
+# $ crontab -e
+# */10 * * * * AUDIO_DIR=path-to-audio-dir S3_LOC=s3://bucket-name/path/ /path-to-script/audio_uploader.sh
+
+# finds files where upload was not successful, gunzipping will result in it being scheduled for upload again.
+find $AUDIO_DIR -type f -cmin +360 -regex '.*\.mp3.gz' -exec gunzip {} \;
+
+# uploads all .mp3 files, which have not been changed within the last minutes and renames them to .mp3.bak
+find $AUDIO_DIR -type f -cmin +1 -regex '.*\.mp3' \
+  -exec gzip {} \; \
+  -exec date \; \
+  -exec /usr/local/bin/aws s3 cp {}.gz $S3_LOC \; \
+  -exec date \; \
+  -exec mv {}.gz {}.gz.bak \;
+
+# deletes all .bak files, which have not been accessed in the last 7 days.
+find $AUDIO_DIR -type f -ctime +5 -regex '.*\.bak' -exec rm {} \;
