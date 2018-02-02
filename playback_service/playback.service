@@ -1,0 +1,14 @@
+[Unit]
+Description=MPlayer Stream Playback
+After=network.target
+
+[Service]
+Type=simple
+User=producer
+WorkingDirectory=/home/producer
+ExecStart=/usr/bin/mplayer -cache 300 -cache-min 50 <STREAM_URL>
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
