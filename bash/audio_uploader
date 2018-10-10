@@ -22,15 +22,16 @@
 # */10 * * * * AUDIO_DIR=path-to-audio-dir S3_LOC=s3://bucket-name/path/ /path-to-script/audio_uploader.sh
 
 # finds files where upload was not successful, gunzipping will result in it being scheduled for upload again.
-find $AUDIO_DIR -type f -cmin +360 -regex '.*\.mp3.gz' -exec gunzip {} \;
+cd $AUDIO_DIR
+find . -type f -cmin +360 -regex '.*\.mp3.gz' -exec gunzip {} \;
 
 # uploads all .mp3 files, which have not been changed within the last minutes and renames them to .mp3.bak
 find $AUDIO_DIR -type f -cmin +1 -regex '.*\.mp3' \
   -exec gzip {} \; \
   -exec date \; \
-  -exec /usr/local/bin/aws s3 cp {}.gz $S3_LOC \; \
+  -exec /usr/local/bin/aws s3 cp {}.gz $S3_LOC{}.gz \; \
   -exec date \; \
   -exec mv {}.gz {}.gz.bak \;
 
 # deletes all .bak files, which have not been accessed in the last 7 days.
-find $AUDIO_DIR -type f -ctime +5 -regex '.*\.bak' -exec rm {} \;
+find . -type f -ctime +5 -regex '.*\.bak' -exec rm {} \;
