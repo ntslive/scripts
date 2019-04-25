@@ -1,0 +1,30 @@
+#!/usr/bin/env bash -e
+
+# ###SETUP###
+
+# Install AWS CLI
+# http://docs.aws.amazon.com/cli/latest/userguide/installing.html
+
+# Configure AWS CLI with credentials:
+# $ aws configure
+# AWS Access Key ID [****************MQ5A]:
+# AWS Secret Access Key [****************ukte]:
+# Default region name [eu-west-1]:
+# Default output format [None]:
+
+# you may want to reduce maximum number of concurrent requests (default it 10)
+# Lowering this value will make the S3 transfer commands less resource intensive.
+# more info http://docs.aws.amazon.com/cli/latest/topic/s3-config.html
+# $ aws configure set default.s3.max_concurrent_requests 2
+
+# Test manually, then set up crontab
+# $ crontab -e
+# */10 * * * * ARCHIVE_DIR=path-uploads-parent-dir S3_LOC=s3://bucket-name/path/ /path-to-script/media_uploader
+
+cd $ARCHIVE_DIR
+find -E uploads -type f -cmin +5 \
+  -exec /usr/local/bin/aws s3 mv {} $S3_LOC$(date +%s)/{} \;
+
+# deletes empty folders (older than 5mins)
+find uploads -type d -cmin +5 -empty -delete
+mkdir -p uploads
