@@ -23,7 +23,7 @@
 
 cd $ARCHIVE_DIR
 find -E uploads -type f -cmin +5 \
-  -exec /usr/local/bin/aws s3 mv {} $S3_LOC$(date +%s)/{} \;
+  -exec /usr/local/bin/aws s3 mv {} $S3_LOC{} \;
 
 # deletes empty folders (older than 5mins)
 find uploads -type d -cmin +5 -empty -delete
