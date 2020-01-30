@@ -30,7 +30,7 @@ find -E . -type f -cmin +360 -iregex '.*\.(mov|jpeg|jpg|png|gif|mp3|mp4|wav).gz'
 find -E . -type f -cmin +1 -iregex '.*\.(mov|jpeg|jpg|png|gif|mp3|mp4|wav)' \
   -exec gzip {} \; \
   -exec date \; \
-  -exec /usr/local/bin/aws s3 cp {}.gz $S3_LOC{}.gz \; \
+  -exec /usr/local/bin/aws s3 cp {}.gz $S3_LOC \; \
   -exec date \; \
   -exec mv {}.gz {}.gz.bak \;
 
