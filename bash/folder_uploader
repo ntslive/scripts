@@ -19,7 +19,7 @@
 
 # Test manually, then set up crontab
 # $ EDITOR=vim crontab -e
-# */10 * * * * ARCHIVE_DIR=path-uploads-parent-dir S3_LOC=s3://bucket-name/path/ /path-to-script/media_uploader
+# 15,45 * * * * ARCHIVE_DIR=path-uploads-parent-dir S3_LOC=s3://bucket-name/path/ /path-to-script/media_uploader
 
 cd $ARCHIVE_DIR
 find -E uploads -type f -cmin +5 \
