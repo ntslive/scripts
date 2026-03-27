@@ -38,18 +38,18 @@ param (
 
 
 # find files where upload was not successful, gunzipping will result in it being scheduled for upload again.
-Get-ChildItem -Path $AudioDir -Filter *.mp3.gz -Recurse | Where-Object { $_.LastWriteTime -lt (Get-Date).AddMinutes(-360) } | ForEach-Object {
-    gzip -d $_.FullName
-}
+# Get-ChildItem -Path $AudioDir -Filter *.mp3.gz -Recurse | Where-Object { $_.LastWriteTime -lt (Get-Date).AddMinutes(-360) } | ForEach-Object {
+#     gzip -d $_.FullName
+# }
 
 # uploads all .mp3 files, which have not been changed within the last minutes and renames them to .mp3.bak
 Get-ChildItem -Path $AudioDir -Filter *.mp3 -Recurse | Where-Object { $_.LastWriteTime -lt (Get-Date).AddMinutes(-1) } | ForEach-Object {
-    gzip $_.FullName
+    # gzip $_.FullName
     Get-Date
-    $gzippedFile = "$($_.FullName).gz"
-    aws s3 cp $gzippedFile $S3Loc
+    # $gzippedFile = "$($_.FullName)"
+    aws s3 cp $_.FullName $S3Loc
     Get-Date
-    Rename-Item $gzippedFile "$($gzippedFile).bak"
+    Rename-Item $_.FullName "$($_.FullName).bak"
 }
 
 # deletes all .bak files, which have not been accessed in the last 7 days.
