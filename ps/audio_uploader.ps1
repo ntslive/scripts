@@ -17,7 +17,7 @@
 # PS> aws configure set default.s3.max_concurrent_requests 2
 
 # Test manually, then set up a scheduled task
-# PS> pwsh -File C:\path\to\script\audio_uploader.ps1 -AudioDir C:\path\to\audio-dir -S3Loc s3://bucket-name/path/
+# PS> powershell -File C:\path\to\script\audio_uploader.ps1 -AudioDir C:\path\to\audio-dir -S3Loc s3://bucket-name/path/
 
 .SYNOPSIS
     Uploads audio files to AWS S3.
@@ -36,23 +36,20 @@ param (
     [string]$S3Loc
 )
 
-
-# find files where upload was not successful, gunzipping will result in it being scheduled for upload again.
-# Get-ChildItem -Path $AudioDir -Filter *.mp3.gz -Recurse | Where-Object { $_.LastWriteTime -lt (Get-Date).AddMinutes(-360) } | ForEach-Object {
-#     gzip -d $_.FullName
-# }
+Write-Host "Starting Script $(Get-Date)"
+Write-Host "Source $AudioDir"
+Write-Host "Dest $S3Loc"
 
 # uploads all .mp3 files, which have not been changed within the last minutes and renames them to .mp3.bak
-Get-ChildItem -Path $AudioDir -Filter *.mp3 -Recurse | Where-Object { $_.LastWriteTime -lt (Get-Date).AddMinutes(-1) } | ForEach-Object {
-    # gzip $_.FullName
-    Get-Date
-    # $gzippedFile = "$($_.FullName)"
+Get-ChildItem -Path $AudioDir -Filter *.mp3 -Recurse | Where-Object { $_.LastWriteTime -lt (Get-Date).AddMinutes(-30) } | ForEach-Object {
+    Write-Host "File $_.FullName"
+    Write-Host "Start uploading $(Get-Date)"
     aws s3 cp $_.FullName $S3Loc
-    Get-Date
+    Write-Host "Uploading complete $(Get-Date)"
     Rename-Item $_.FullName "$($_.FullName).bak"
 }
 
 # deletes all .bak files, which have not been accessed in the last 7 days.
-Get-ChildItem -Path $AudioDir -Filter *.bak -Recurse | Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-5) } | ForEach-Object {
+Get-ChildItem -Path $AudioDir -Filter *.bak -Recurse | Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-7) } | ForEach-Object {
     Remove-Item $_.FullName
 }
