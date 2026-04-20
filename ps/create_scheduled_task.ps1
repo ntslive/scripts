@@ -1,13 +1,5 @@
 #Requires -RunAsAdministrator
 
-# Script to create a scheduled task to run the audio_uploader.ps1 script
-param(
-    [Parameter(Mandatory=$true)]
-    [string]$S3Loc,
-
-    [Parameter(Mandatory=$true)]
-    [string]$AudioDir
-)
 # Define the name of the scheduled task
 $TaskName = "Audio Uploader"
 
@@ -17,6 +9,9 @@ $ScriptPath = Join-Path $PSScriptRoot "audio_uploader.ps1"
 
 # Define the log file path in the same directory as the script
 $LogFilePath = Join-Path $PSScriptRoot "AudioUploader.log"
+
+$AudioDir = "C:\Users\Radio Production\Recording\PlayIt\NTS1"
+$S3Loc = "s3://nts-incoming/*_UPLOADS_S2_STREAMING/CompressedOmnia9/"
 
 # Define the action for the scheduled task
 $TaskAction = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$ScriptPath`" -S3Loc `"$S3Loc`" -AudioDir `"$AudioDir`" *>&1 | Out-File -FilePath `"$LogFilePath`" -Force"
