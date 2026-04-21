@@ -15,7 +15,7 @@ $TaskAction = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-NoPr
 
 # Define the trigger for the scheduled task to run every 15 minutes
 $StartTime = (Get-Date).AddDays(-1).Date
-$TaskTrigger = New-ScheduledTaskTrigger -Once -At $StartTime -RepetitionInterval (New-TimeSpan -Minutes 15) -RepetitionDuration ([TimeSpan]::MaxValue)
+$TaskTrigger = New-ScheduledTaskTrigger -Once -At $StartTime -RepetitionInterval (New-TimeSpan -Minutes 15)
 
 # Define the settings for the scheduled task
 $TaskSettings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RunOnlyIfNetworkAvailable
