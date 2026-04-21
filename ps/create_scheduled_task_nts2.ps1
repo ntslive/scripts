@@ -1,13 +1,13 @@
 #Requires -RunAsAdministrator
 
 # Define the name of the scheduled task
-$TaskName = "Audio Uploader"
+$TaskName = "Audio Uploader NTS2"
 
 # Define the path to the script to be executed
 # $PSScriptRoot is an automatic variable that contains the directory from which a script is being run
 $ScriptPath = Join-Path $PSScriptRoot "audio_uploader.ps1"
 
-$AudioDir = "C:\Users\Radio Production\Recordings\PlayIt\NTS1"
+$AudioDir = "C:\Users\Radio Production\Recordings\PlayIt\NTS2"
 $S3Loc = "s3://nts-incoming/*_UPLOADS_S2_STREAMING/CompressedOmnia9/"
 
 # Define the action for the scheduled task
@@ -15,7 +15,7 @@ $TaskAction = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-NoPr
 
 # Define the trigger for the scheduled task to run every 15 minutes
 # $TaskTrigger = New-ScheduledTaskTrigger -Repeating -RepetitionInterval (New-TimeSpan -Minutes 15)
-$TaskTrigger = New-ScheduledTaskTrigger -AtLogon
+$TaskTrigger = New-ScheduledTaskTrigger -AtLogon -RandomDelay (New-TimeSpan -Minutes 20) -RepetitionInterval (New-TimeSpan -Minutes 15) -RepetitionDuration ([TimeSpan]::MaxValue)
 
 # Define the settings for the scheduled task
 $TaskSettings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RunOnlyIfNetworkAvailable
