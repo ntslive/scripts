@@ -38,16 +38,16 @@ param (
 
 $LogFilePath = Join-Path $PSScriptRoot "AudioUploader.log"
 
-Write-Host "Starting Script $(Get-Date)" | Out-File -FilePath $LogFilePath -Append
-Write-Host "Source $AudioDir" | Out-File -FilePath $LogFilePath -Append
-Write-Host "Dest $S3Loc" | Out-File -FilePath $LogFilePath -Append
+"Starting Script $(Get-Date)" | Out-File -FilePath $LogFilePath -Append
+"Source $AudioDir" | Out-File -FilePath $LogFilePath -Append
+"Dest $S3Loc" | Out-File -FilePath $LogFilePath -Append
 
 # uploads all .mp3 files, which have not been changed within the last minutes and renames them to .mp3.bak
 Get-ChildItem -Path $AudioDir -Filter *.mp3 -Recurse | Where-Object { $_.LastWriteTime -lt (Get-Date).AddMinutes(-30) } | ForEach-Object {
-    Write-Host "File $_.FullName" | Out-File -FilePath $LogFilePath -Append
-    Write-Host "Start uploading $(Get-Date)" | Out-File -FilePath $LogFilePath -Append
+    "File $_.FullName" | Out-File -FilePath $LogFilePath -Append
+    "Start uploading $(Get-Date)" | Out-File -FilePath $LogFilePath -Append
     aws s3 cp $_.FullName $S3Loc
-    Write-Host "Uploading complete $(Get-Date)" | Out-File -FilePath $LogFilePath -Append
+    "Uploading complete $(Get-Date)" | Out-File -FilePath $LogFilePath -Append
     Rename-Item $_.FullName "$($_.FullName).bak"
 }
 
