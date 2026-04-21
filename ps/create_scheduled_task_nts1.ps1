@@ -14,8 +14,8 @@ $S3Loc = "s3://nts-incoming/*_UPLOADS_S2_STREAMING/CompressedOmnia9/"
 $TaskAction = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$ScriptPath`" -S3Loc `"$S3Loc`" -AudioDir `"$AudioDir`""
 
 # Define the trigger for the scheduled task to run every 15 minutes
-# $TaskTrigger = New-ScheduledTaskTrigger -Repeating -RepetitionInterval (New-TimeSpan -Minutes 15)
-$TaskTrigger = New-ScheduledTaskTrigger -AtLogon -RandomDelay (New-TimeSpan -Minutes 20) -RepetitionInterval (New-TimeSpan -Minutes 15) -RepetitionDuration ([TimeSpan]::MaxValue)
+$StartTime = (Get-Date).AddDays(-1).Date
+$TaskTrigger = New-ScheduledTaskTrigger -Once -At $StartTime -RepetitionInterval (New-TimeSpan -Minutes 15)
 
 # Define the settings for the scheduled task
 $TaskSettings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RunOnlyIfNetworkAvailable
