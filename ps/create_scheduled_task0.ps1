@@ -14,7 +14,7 @@ $LogFilePath = Join-Path $PSScriptRoot "zero.log"
 $TaskAction = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$ScriptPath`" *>&1 | Out-File -FilePath `"$LogFilePath`" -Force"
 
 # Define the trigger for the scheduled task to run every 15 minutes
-$TaskTrigger = New-ScheduledTaskTrigger -Daily -At 3am
+$TaskTrigger = New-ScheduledTaskTrigger -AtLogon
 
 # Define the settings for the scheduled task
 $TaskSettings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RunOnlyIfNetworkAvailable
