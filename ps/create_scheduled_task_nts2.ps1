@@ -21,6 +21,6 @@ $TaskTrigger = New-ScheduledTaskTrigger -Once -At $StartTime -RepetitionInterval
 $TaskSettings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RunOnlyIfNetworkAvailable
 
 # Register the scheduled task
-Register-ScheduledTask -TaskName $TaskName -Action $TaskAction -Trigger $TaskTrigger -Settings $TaskSettings -Description "Runs the audio uploader script every 15 minutes when a network is available." -User "SYSTEM" -Force
+Register-ScheduledTask -TaskName $TaskName -Action $TaskAction -Trigger $TaskTrigger -Settings $TaskSettings -Description "Runs the audio uploader script every 15 minutes when a network is available." -Force
 
 Write-Host "Scheduled task '$TaskName' has been created to run '$ScriptPath' every 15 minutes when a network is available."
