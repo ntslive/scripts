@@ -7,9 +7,6 @@ $TaskName = "Test Zero"
 # $PSScriptRoot is an automatic variable that contains the directory from which a script is being run
 $ScriptPath = Join-Path $PSScriptRoot "zero.ps1"
 
-# Define the log file path in the same directory as the script
-$LogFilePath = Join-Path $PSScriptRoot "zero.log"
-
 # Define the action for the scheduled task
 $TaskAction = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$ScriptPath`""
 
@@ -20,6 +17,6 @@ $TaskTrigger = New-ScheduledTaskTrigger -AtLogon
 $TaskSettings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RunOnlyIfNetworkAvailable
 
 # Register the scheduled task
-Register-ScheduledTask -TaskName $TaskName -Action $TaskAction -Trigger $TaskTrigger -Settings $TaskSettings -Description "Test task." -User "SYSTEM" -RedirectStandardOutput $LogFilePath -Force
+Register-ScheduledTask -TaskName $TaskName -Action $TaskAction -Trigger $TaskTrigger -Settings $TaskSettings -Description "Test task." -User "SYSTEM" -Force
 
 Write-Host "Scheduled task '$TaskName' has been created"
