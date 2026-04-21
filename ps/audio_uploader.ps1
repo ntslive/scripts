@@ -36,20 +36,20 @@ param (
     [string]$S3Loc
 )
 
-$LogFilePath = Join-Path $PSScriptRoot "AudioUploader.log"
+$LogFilePath = Join-Path $AudioDir "AudioUploader.log"
 
-"Starting Script $(Get-Date) Source $AudioDir Dest $S3Loc" | Out-File -FilePath $LogFilePath -Append
+"$(Get-Date) Starting Script Source $AudioDir Dest $S3Loc" | Out-File -FilePath $LogFilePath -Append
 
 # uploads all .mp3 files, which have not been changed within the last minutes and renames them to .mp3.bak
 Get-ChildItem -Path "$AudioDir" -Filter *.mp3 -Recurse | Where-Object { $_.LastWriteTime -lt (Get-Date).AddMinutes(-30) } | ForEach-Object {
-    "Start uploading $(Get-Date) File $($_.FullName)" | Out-File -FilePath $LogFilePath -Append
+    "$(Get-Date) Uploading start File $($_.FullName)" | Out-File -FilePath $LogFilePath -Append
     aws s3 cp "$($_.FullName)" "$S3Loc"
-    "Uploading complete $(Get-Date) File $($_.FullName)" | Out-File -FilePath $LogFilePath -Append
+    "$(Get-Date) Uploading ended File $($_.FullName)" | Out-File -FilePath $LogFilePath -Append
     Rename-Item "$($_.FullName)" "$($_.FullName).bak"
 }
-"Upload complete Source $AudioDir" | Out-File -FilePath $LogFilePath -Append
+"$(Get-Date) Upload complete Source $AudioDir" | Out-File -FilePath $LogFilePath -Append
 # deletes all .bak files, which have not been accessed in the last 7 days.
 Get-ChildItem -Path $AudioDir -Filter *.bak -Recurse | Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-7) } | ForEach-Object {
     Remove-Item $($_.FullName)
 }
-"Script complete $(Get-Date) Source $AudioDir" | Out-File -FilePath $LogFilePath -Append
+"$(Get-Date) Script complete Source $AudioDir" | Out-File -FilePath $LogFilePath -Append
