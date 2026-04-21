@@ -42,7 +42,7 @@ $LogFilePath = Join-Path $AudioDir "AudioUploader.log"
 
 # uploads all .mp3 files, which have not been changed within the last minutes and renames them to .mp3.bak
 Get-ChildItem -Path "$AudioDir" -Filter *.mp3 -Recurse | Where-Object { $_.LastWriteTime -lt (Get-Date).AddMinutes(-30) } | ForEach-Object {
-    "$(Get-Date) Uploading start File $($_.FullName)" | Out-File -FilePath $LogFilePath -Append
+    "$(Get-Date) Uploading start File $($_.FullName) $($_.LastWriteTime)" | Out-File -FilePath $LogFilePath -Append
     aws s3 cp "$($_.FullName)" "$S3Loc"
     "$(Get-Date) Uploading ended File $($_.FullName)" | Out-File -FilePath $LogFilePath -Append
     Rename-Item "$($_.FullName)" "$($_.FullName).bak"
