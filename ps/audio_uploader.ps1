@@ -43,12 +43,12 @@ $LogFilePath = Join-Path $PSScriptRoot "AudioUploader.log"
 "Dest $S3Loc" | Out-File -FilePath $LogFilePath -Append
 
 # uploads all .mp3 files, which have not been changed within the last minutes and renames them to .mp3.bak
-Get-ChildItem -Path $AudioDir -Filter *.mp3 -Recurse | Where-Object { $_.LastWriteTime -lt (Get-Date).AddMinutes(-30) } | ForEach-Object {
+Get-ChildItem -Path "$AudioDir" -Filter *.mp3 -Recurse | Where-Object { $_.LastWriteTime -lt (Get-Date).AddMinutes(-30) } | ForEach-Object {
     "File $_.FullName" | Out-File -FilePath $LogFilePath -Append
     "Start uploading $(Get-Date)" | Out-File -FilePath $LogFilePath -Append
-    aws s3 cp $_.FullName $S3Loc
+    aws s3 cp "$_.FullName" $S3Loc
     "Uploading complete $(Get-Date)" | Out-File -FilePath $LogFilePath -Append
-    Rename-Item $_.FullName "$($_.FullName).bak"
+    Rename-Item "$_.FullName" "$_.FullName.bak"
 }
 
 # deletes all .bak files, which have not been accessed in the last 7 days.
