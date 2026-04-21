@@ -50,8 +50,9 @@ Get-ChildItem -Path "$AudioDir" -Filter *.mp3 -Recurse | Where-Object { $_.LastW
     "Uploading complete $(Get-Date)" | Out-File -FilePath $LogFilePath -Append
     Rename-Item "$_.FullName" "$_.FullName.bak"
 }
-
+"Upload complete" | Out-File -FilePath $LogFilePath -Append
 # deletes all .bak files, which have not been accessed in the last 7 days.
 Get-ChildItem -Path $AudioDir -Filter *.bak -Recurse | Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-7) } | ForEach-Object {
     Remove-Item $_.FullName
 }
+"Script complete" | Out-File -FilePath $LogFilePath -Append
