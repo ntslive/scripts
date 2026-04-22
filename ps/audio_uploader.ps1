@@ -47,8 +47,8 @@ Start-Transcript -Path "$LogFilePath" -Append
     Log-Message "Starting Script Source $AudioDir Dest $S3Loc"
 
     # uploads all .mp3 files, which have not been changed within the last minutes and renames them to .mp3.bak
-    Get-ChildItem -Path "$AudioDir" -Filter *.mp3 -Recurse | Where-Object { $_.LastWriteTime -lt (Get-Date).AddMinutes(-61) } | ForEach-Object {
-        Log-Message "Uploading start File $($_.FullName) $($_.LastWriteTime)"
+    Get-ChildItem -Path "$AudioDir" -Filter *.mp3 -Recurse | Where-Object { $_.CreationTime -lt (Get-Date).AddMinutes(-122) } | ForEach-Object {
+        Log-Message "Uploading start File $($_.FullName) $($_.CreationTime)"
         aws s3 cp "$($_.FullName)" "$S3Loc"
         Log-Message "Uploading ended File $($_.FulName)"
         Rename-Item "$($_.FullName)" "$($_.FullName).bak"
@@ -60,3 +60,8 @@ Start-Transcript -Path "$LogFilePath" -Append
     }
     Log-Message "Script complete Source $AudioDir"
 Stop-Transcript
+
+# log rotate
+Get-ChildItem -Path $AudioDir -Filter *.log -Recurse | Where-Object { $_.CreationTime -lt (Get-Date).AddHours(-25) } | ForEach-Object {
+    Rename-Item "$($_.FullName)" "$($_.FullName)$(Get-Date -Format "yyyy-MM-dd").bak"
+}
