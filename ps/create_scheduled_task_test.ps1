@@ -9,7 +9,7 @@ $ScriptPath = Join-Path $PSScriptRoot "test.ps1"
 $LogPath = Join-Path $PSScriptRoot "test.log"
 
 # Define the action for the scheduled task
-$TaskAction = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File `"$ScriptPath`" > `"$LogPath`" 2>&1"
+$TaskAction = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File `"$ScriptPath`" -LogPath `"$LogPath`""
 
 # Define the trigger for the scheduled task to run every 15 minutes
 $StartTime = (Get-Date).AddDays(-1).Date
