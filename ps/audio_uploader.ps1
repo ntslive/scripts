@@ -36,20 +36,27 @@ param (
     [string]$S3Loc
 )
 
+function Log-Message {
+    param([string]$Message)
+    $Stamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    Write-Output "[$Stamp] $Message"
+}
+
 $LogFilePath = Join-Path $AudioDir "AudioUploader.log"
+Start-Transcript -Path "$LogFilePath" -Append
+    Log-Message "Starting Script Source $AudioDir Dest $S3Loc"
 
-"$(Get-Date) Starting Script Source $AudioDir Dest $S3Loc" | Out-File -FilePath $LogFilePath -Append
-
-# uploads all .mp3 files, which have not been changed within the last minutes and renames them to .mp3.bak
-Get-ChildItem -Path "$AudioDir" -Filter *.mp3 -Recurse | Where-Object { $_.LastWriteTime -lt (Get-Date).AddMinutes(-61) } | ForEach-Object {
-    "$(Get-Date) Uploading start File $($_.FullName) $($_.LastWriteTime)" | Out-File -FilePath $LogFilePath -Append
-    aws s3 cp "$($_.FullName)" "$S3Loc"
-    "$(Get-Date) Uploading ended File $($_.FullName)" | Out-File -FilePath $LogFilePath -Append
-    Rename-Item "$($_.FullName)" "$($_.FullName).bak"
-}
-# deletes all .bak files, which have not been accessed in the last 7 days.
-Get-ChildItem -Path $AudioDir -Filter *.bak -Recurse | Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-7) } | ForEach-Object {
-    "$(Get-Date) Deleting File $($_.FullName) $($_.LastWriteTime)" | Out-File -FilePath $LogFilePath -Append
-    Remove-Item $($_.FullName)
-}
-"$(Get-Date) Script complete Source $AudioDir" | Out-File -FilePath $LogFilePath -Append
+    # uploads all .mp3 files, which have not been changed within the last minutes and renames them to .mp3.bak
+    Get-ChildItem -Path "$AudioDir" -Filter *.mp3 -Recurse | Where-Object { $_.LastWriteTime -lt (Get-Date).AddMinutes(-61) } | ForEach-Object {
+        Log-Message "Uploading start File $($_.FullName) $($_.LastWriteTime)"
+        aws s3 cp "$($_.FullName)" "$S3Loc"
+        Log-Message "Uploading ended File $($_.FulName)"
+        Rename-Item "$($_.FullName)" "$($_.FullName).bak"
+    }
+    # deletes all .bak files, which have not been accessed in the last 7 days.
+    Get-ChildItem -Path $AudioDir -Filter *.bak -Recurse | Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-7) } | ForEach-Object {
+        Log-Message "Deleting File $($_.FullName) $($_.LastWriteTime)"
+        Remove-Item $($_.FullName)
+    }
+    Log-Message "Script complete Source $AudioDir"
+Stop-Transcript
