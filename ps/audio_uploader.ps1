@@ -48,9 +48,9 @@ Start-Transcript -Path "$LogFilePath" -Append
 
     # uploads all .mp3 files, which have not been changed within the last minutes and renames them to .mp3.bak
     Get-ChildItem -Path "$AudioDir" -Filter *.mp3 -Recurse | Where-Object { $_.CreationTime -lt (Get-Date).AddMinutes(-122) } | ForEach-Object {
-        Log-Message "Uploading start File $($_.FullName) $($_.CreationTime)"
+        Log-Message "Uploading start File $($_.FullName) Created $($_.CreationTime)"
         aws s3 cp "$($_.FullName)" "$S3Loc"
-        Log-Message "Uploading ended File $($_.FulName)"
+        Log-Message "Uploading ended File $($_.FullName)"
         Rename-Item "$($_.FullName)" "$($_.FullName).bak"
     }
     # deletes all .bak files, which have not been accessed in the last 7 days.
